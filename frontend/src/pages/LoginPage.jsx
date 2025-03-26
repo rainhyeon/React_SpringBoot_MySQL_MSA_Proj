@@ -10,7 +10,7 @@ function LoginPage() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('/api/users/login', { username, password });
+      const res = await axios.post('http://user:8081/api/users/login', { username, password });
       alert('로그인 성공!');
       navigate('/'); // 홈으로 이동
     } catch (err) {

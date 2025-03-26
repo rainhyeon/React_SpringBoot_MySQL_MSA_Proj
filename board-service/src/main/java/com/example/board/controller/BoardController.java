@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.*;
 public class BoardController {
 
     private final BoardService boardService;
-
-    @PostMapping
-    public ResponseEntity<String> create(@RequestBody BoardRequest request) {
+    
+    @PostMapping("/write")
+    public ResponseEntity<?> write(@RequestBody BoardRequest request) {
         boardService.save(request);
-        return ResponseEntity.ok("게시글 작성 완료");
+        return ResponseEntity.ok("글쓰기 성공");
     }
 }
 

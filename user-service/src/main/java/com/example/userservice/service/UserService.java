@@ -26,8 +26,7 @@ public class UserService {
 
     // 로그인
     public boolean loginUser(String username, String password) {
-        Optional<User> user = userRepository.findByUsername(username);
-        return user.map(u -> u.getPassword().equals(password))
-                   .orElse(false);
+        Optional<User> userOpt = userRepository.findByUsername(username);
+        return userOpt.isPresent() && userOpt.get().getPassword().equals(password);
     }
 }

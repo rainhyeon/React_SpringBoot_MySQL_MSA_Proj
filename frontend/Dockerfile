@@ -13,4 +13,4 @@ RUN npm run build
 # 실행 단계
 FROM rainhyeonnn/nginx:stable-alpine
 COPY --from=builder /app/build /usr/share/nginx/html
-
+COPY nginx.conf /etc/nginx/conf.d/default.conf

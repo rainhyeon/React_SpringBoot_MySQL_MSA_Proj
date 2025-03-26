@@ -4,6 +4,9 @@ import com.example.userservice.model.User;
 import com.example.userservice.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import javax.servlet.http.HttpSession;
+import java.util.Collections;
+
 
 @RestController
 @RequestMapping("api/users")
@@ -34,4 +37,11 @@ public class UserController {
         if (success) return ResponseEntity.ok("Login success!");
         else return ResponseEntity.status(401).body("Invalid credentials");
     }
+
+    @GetMapping("/status")
+    public ResponseEntity<?> loginStatus(HttpSession session) {
+        Boolean loggedIn = session.getAttribute("user") != null;
+        return ResponseEntity.ok(Collections.singletonMap("loggedIn", loggedIn));
+    }
+
 }

@@ -1,0 +1,26 @@
+version: '3'
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - user
+  user:
+    build: ./user-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://user-db:3306/users
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: password    
+    depends_on:
+      - user-db
+  user-db:
+    image: mysql:8
+    environment:
+      MYSQL_DATABASE: users
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - "3306:3306"
+

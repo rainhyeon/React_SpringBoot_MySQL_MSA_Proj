@@ -1,5 +1,5 @@
 # 빌더 단계
-FROM rainhyeonnn/node:18-alpine AS builder
+FROM node:18-alpine AS builder
 
 WORKDIR /app
 COPY . .
@@ -11,6 +11,6 @@ RUN npm install
 RUN npm run build
 
 # 실행 단계
-FROM rainhyeonnn/nginx:stable-alpine
+FROM nginx:stable-alpine
 COPY --from=builder /app/build /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf

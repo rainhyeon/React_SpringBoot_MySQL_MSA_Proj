@@ -1,7 +1,8 @@
-## 스프링 3.x 버전으로 따라하시는 분들
-```text
-스프링 3.x 버전은 최소 JDK 버전이 17입니다.
-```
+## 프로젝트 개요
+- 기존 모놀리식(Springboot-JPA-Blog) 구조를 MSA 아키텍처로 전환
+- React (Frontend), Spring Boot (Backend), MySQL (DB) 구성
+- Docker 기반으로 각 서비스 컨테이너화
+- API 중심 설계로 프론트/백엔드 완전 분리
 
 ## Docker 설치 - ubuntu 환경
 ```code

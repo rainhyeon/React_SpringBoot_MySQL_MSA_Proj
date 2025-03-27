@@ -21,5 +21,12 @@ public class Board {
     @Lob
     private String content;
 
-    private Long userId;
+    private String userId;
+
+    // ✅ 추가 생성자
+    public Board(String title, String content, String userId) {
+        this.title = title;
+        this.content = content;
+        this.userId = userId;
+    }
 }

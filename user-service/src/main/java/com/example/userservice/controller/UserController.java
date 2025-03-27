@@ -2,21 +2,22 @@ package com.example.userservice.controller;
 
 import com.example.userservice.model.User;
 import com.example.userservice.service.UserService;
+import com.example.userservice.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import java.util.Collections;
+import lombok.RequiredArgsConstructor; // ✅ 이거 반드시 필요
+
 
 
 @RestController
 @RequestMapping("api/users")
+@RequiredArgsConstructor // ✅ 이거 반드시 필요!
 public class UserController {
 
     private final UserService userService;
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    private final UserRepository userRepository;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User newUser) {
@@ -43,5 +44,14 @@ public class UserController {
         Boolean loggedIn = session.getAttribute("user") != null;
         return ResponseEntity.ok(Collections.singletonMap("loggedIn", loggedIn));
     }
+
+    // UserController.java
+    @GetMapping("/{username}/exists")
+    public ResponseEntity<Boolean> existsByUsername(@PathVariable String username) {
+        boolean exists = userRepository.existsByUsername(username);
+        return ResponseEntity.ok(exists);
+    }
+
+
 
 }

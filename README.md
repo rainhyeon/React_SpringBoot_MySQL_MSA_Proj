@@ -60,7 +60,7 @@ docker logs {frontend NAME}
 - board: 게시판 글쓰기
 - board-db: 게시판 글 저장 DB (Database: board_db, Table: board)
 
-## 접속 방법
+## 웹 접속 방법
 ```text
 http://{localhost}:3000 으로 접속
 ```
@@ -79,7 +79,7 @@ http://{localhost}:3000 으로 접속
 - 꼭 회원가입한 username으로 사용자 ID를 작성해야한다
 
 
-## DB에 들어간 데이터 내용용 확인
+## DB에 들어간 데이터 내용 확인
 ### user-db 확인
 ```code
 docker ps # user-db NAME 확인

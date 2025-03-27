@@ -18,21 +18,23 @@ ip add
 ```
 
 
-## docker compose 실행
+## docker compose로 빌드 및 실행
 ```code
-cd 0326_Docker_Toyproj
+mv React_SpringBoot_MySQL_MSA_Proj WebSite
+cd WebSite
 docker compose up -d --build
 ```
+
 ### docker compose로 frontend 만 Build 및 실행
 ```code
-cd 0326_Docker_Toyproj
+cd WebSite
 docker compose build frontend
 docker compose up frontend -d
 ```
 
 ### docker compose로 user-service 만 Build 및 실행
 ```code
-cd 0326_Docker_Toyproj
+cd WebSite
 docker compose build user
 docker compose up user -d
 ```

@@ -7,30 +7,11 @@ function LoginPage({ setIsLoggedIn }) {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  // ✅ 로그인 상태 확인 (선택적)
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        const res = await axios.get('/api/users/status');
-        if (res.data.loggedIn) {
-          localStorage.setItem('isLoggedIn', 'true');
-          setIsLoggedIn(true);
-        }
-      } catch (err) {
-        localStorage.setItem('isLoggedIn', 'false');
-        setIsLoggedIn(false);
-      }
-    };
-
-    checkLoginStatus();
-  }, []);
-
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       await axios.post('/api/users/login', { username, password });
       alert('로그인 성공!');
-      localStorage.setItem('isLoggedIn', 'true');
       setIsLoggedIn(true);
       navigate('/');
     } catch (err) {

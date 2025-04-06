@@ -14,7 +14,7 @@ services:
       timeout: 5s
       retries: 5
 
-  user:
+  user-service:
     build: ./user-service
     ports:
       - "8081:8081"
@@ -39,7 +39,7 @@ services:
       timeout: 5s
       retries: 5
 
-  board:
+  board-service:
     build: ./board-service
     ports:
       - "8080:8080"
@@ -55,6 +55,12 @@ services:
     build: ./frontend
     ports:
       - "3000:80"
+    environment:
+      BOARD_API_HOST: board-service
+      BOARD_API_PORT: 8080
+      USER_API_HOST: user-service
+      USER_API_PORT: 8081
+
     depends_on:
-      - user
-      - board
+      - user-service
+      - board-service

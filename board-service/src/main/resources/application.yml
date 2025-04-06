@@ -14,3 +14,5 @@ spring:
     properties:
       hibernate:
         format_sql: true
+user-service:
+  url: http://${USER_API_HsOST:user-service}:${USER_API_PORT:8081}

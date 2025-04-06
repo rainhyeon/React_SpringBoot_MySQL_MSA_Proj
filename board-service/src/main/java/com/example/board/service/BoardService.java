@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.beans.factory.annotation.Value;
 
 @Service
 @RequiredArgsConstructor
@@ -15,17 +16,9 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final RestTemplate restTemplate = new RestTemplate();
 
-    private final String userServiceUrl = initUserServiceUrl();
-
-    private String initUserServiceUrl() {
-        String host = System.getenv("USER_API_HOST");
-        String port = System.getenv("USER_API_PORT");
-        if (host == null || port == null) {
-            throw new RuntimeException("환경변수 USER_API_HOST 또는 USER_API_PORT가 설정되지 않았습니다.");
-        }
-        return "http://" + host + ":" + port;
-    }
-
+    @Value("${user-service.url}")
+    private String userServiceUrl;
+    
     public void save(BoardRequest request) {
         String userId = request.getUserId();
 

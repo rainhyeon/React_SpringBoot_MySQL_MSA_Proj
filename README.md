@@ -1,32 +1,36 @@
-## 📌 프로젝트 개요
+# 📈 프로젝트 개요
 
 - 기존 모놀리스(Springboot-JPA-Blog) 구조를 MSA 아키텍쳐로 전환하여, 서비스별 독립 개발 및 배포 가능하도록 구성
-- **React (Frontend)**, **Spring Boot (Backend)**, **MySQL (DB)**로 서비스 분리
-- 개발 및 테스트 환경에서는 **Docker Compose**로 로컬 통합 실행
+- **React (Frontend)**, **Spring Boot (Backend)**, MySQL (DB)로 서비스 분리
+- 개발 및 테스트 환경에서는 **Docker Compose**로 로컬 통합 시톱
 - 실제 배포 환경에서는 **AWS ECS + ECR** 기반으로 운영 가능하도록 구조 개정
 - nginx 프로시 설정을 환경변수 기반으로 템플릿화하여, 다양한 배포 환경(ECS, EC2 등)에서도 재사용 가능
-- API 중심 \uuc124계로 프롬트/백어드 완전 분리 및 확장성 확률
+- API 중심 구조로 프론트/백어드 완전 분리 및 확장성 확률
 
 ---
 
-## 💠 Docker 설치 (Ubuntu 기준)
+## 통신 구조 (Board → User)
 
-```bash
-curl -fsSL https://get.docker.com -o get-docker.sh
-chmod +x get-docker.sh
-./get-docker.sh
+- `board-service`는 계정 userId가 존재하는지를 `user-service`에 API 통신으로 확인
+- RestTemplate 사용 + 환경값과 application.yml 연동
+
+```yaml
+# board-service/src/main/resources/application.yml
+user-service:
+  url: http://${USER_API_HOST:user-service}:${USER_API_PORT:8081}
 ```
 
----
+```java
+@Value("${user-service.url}")
+private String userServiceUrl;
 
-## 🐳 전체 서비스 실행
-
-```bash
-git clone https://github.com/rainhyeon/React_SpringBoot_MySQL_MSA_Proj.git
-mv React_SpringBoot_MySQL_MSA_Proj WebSite
-cd WebSite
-docker compose up -d --build
+Boolean userExists = restTemplate.getForObject(
+    userServiceUrl + "/api/users/" + userId + "/exists",
+    Boolean.class
+);
 ```
+
+> 환경에 따라 자동으로 URL 가 변경되기 때문에 Docker 뿐만 아니라 ECS에서도 유용
 
 ---
 
@@ -42,13 +46,13 @@ React에서 API 요청은 `/api/users/*`, `/api/board/*` 경로로 보내며, ng
 그리고 프로시 주소는 환경변수 기반으로 설정되어, Docker 환경 및 ECS 배포에서도 재사용 가능해지는 구조로 개정되었음.
 
 > `nginx.conf`는 `/frontend/nginx.conf.template`에서 환경값 `${USER_API_HOST}`, `${BOARD_API_HOST}`를 템플릿 컨퍼에스트로 변경 적용해 생성됩니다.
+> Docker 또는 ECS 같은 건설 환경에서 동일하게 nginx 구성해줍니다.
 
 ---
 
-## 🧱 Dockerfile 구조 (frontend)
+## Dockerfile (프론트엔드)
 
 ```dockerfile
-# 1단계: React 앱 빌드
 FROM node:18-alpine AS builder
 WORKDIR /app
 COPY . .
@@ -56,7 +60,6 @@ ENV NODE_OPTIONS=--openssl-legacy-provider
 RUN npm install
 RUN npm run build
 
-# 2단계: nginx + 프로시 설정
 FROM nginx:alpine
 COPY --from=builder /app/build /usr/share/nginx/html
 COPY nginx.conf.template /etc/nginx/templates/nginx.conf.template
@@ -65,39 +68,66 @@ RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 ```
 
-> `entrypoint.sh`는 환경값을 받아 nginx.conf를 디바이너리에 생성하는 역할을 합니다.
+> entrypoint.sh는 환경값를 nginx.conf로 변환하고 시작합니다.
 
 ---
 
-## ⚙️ 환경변수 설정 예시 (docker-compose)
+## docker-compose 환경변수 설정 예시
 
 ```yaml
-  frontend:
-    ...
-    environment:
-      BOARD_API_HOST: board-service
-      BOARD_API_PORT: 8080
-      USER_API_HOST: user-service
-      USER_API_PORT: 8081
+frontend:
+  environment:
+    BOARD_API_HOST: board-service
+    BOARD_API_PORT: 8080
+    USER_API_HOST: user-service
+    USER_API_PORT: 8081
+
+board-service:
+  environment:
+    SPRING_DATASOURCE_URL: jdbc:mysql://board-db:3306/board_db
+    USER_API_HOST: user-service
+    USER_API_PORT: 8081
+```
+
+---
+## Docker 설치 (Ubuntu)
+
+```bash
+curl -fsSL https://get.docker.com -o get-docker.sh
+chmod +x get-docker.sh
+./get-docker.sh
 ```
 
 ---
 
-## 🧪 서비스별 빌드 및 실행
+## 통합 서비스 실행
 
-### 프롬트엔드
+```bash
+git clone https://github.com/rainhyeon/MSA_ECR_ECS_Prj.git
+mv MSA_ECR_ECS_Prj WebSite
+cd WebSite
+docker compose up -d --build
+```
+
+---
+
+
+
+## 서비스 단위 발더 & 시작
+
+### frontend
 ```bash
 docker compose build frontend
 docker compose up frontend -d
 ```
 
-### 유저 서비스
+### user-service
 ```bash
 docker compose build user-service
 docker compose up user-service -d
 ```
 
-### 게시판 서비스
+### board-service
 ```bash
 docker compose build board-service
 docker compose up board-service -d
@@ -105,27 +135,27 @@ docker compose up board-service -d
 
 ---
 
-## 🔍 로그 확인 (frontend 기준)
+## 로그 확인
 
 ```bash
-docker ps      # 컨테이너 이름 확인
+docker ps
 docker logs ecr_prj-frontend-1
 ```
 
 ---
 
-## 🌐 웹 접속 방법
+## 웹 접속
 
 ```
 http://localhost:3000
 ```
 
-- 회원가입, 로그인, 글쓰기 등 React 기본 UI 제공
-- API 호출은 내부 nginx 프로시를 통해 backend로 보내지보
+- 회원가입, 로그인, 게시물 기능
+- API 호출은 nginx 프로시를 거치
 
 ---
 
-## 📄 MySQL DB 확인
+## DB 확인
 
 ### user-db
 ```bash
@@ -145,12 +175,13 @@ mysql -u root -ppassword
 
 ---
 
-## 📦 컨테이너 구조 요약
+## 커테이너 구조
 
 | 서비스 | 설명 |
 |------------|--------|
-| frontend | React 정적 파일 + nginx 프로시 서버 |
+| frontend | React 정적 파일 + nginx 프록시 서버 |
 | user-service | 회원가입/로그인 API (Spring Boot) |
-| board-service | 게시판 API (Spring Boot) |
+| board-service | 게시판 API (Spring Boot), user-service와 연동 |
 | user-db | 사용자 정보 저장 MySQL |
-| board-db | 게시물 저장 MySQL |
+| board-db | 게시글 저장 MySQL |
+

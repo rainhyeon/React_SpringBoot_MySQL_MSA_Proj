@@ -13,14 +13,24 @@ import org.springframework.web.client.RestTemplate;
 public class BoardService {
 
     private final BoardRepository boardRepository;
-    private final RestTemplate restTemplate = new RestTemplate(); // 🔥 생성
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    private final String userServiceUrl = initUserServiceUrl();
+
+    private String initUserServiceUrl() {
+        String host = System.getenv("USER_API_HOST");
+        String port = System.getenv("USER_API_PORT");
+        if (host == null || port == null) {
+            throw new RuntimeException("환경변수 USER_API_HOST 또는 USER_API_PORT가 설정되지 않았습니다.");
+        }
+        return "http://" + host + ":" + port;
+    }
 
     public void save(BoardRequest request) {
         String userId = request.getUserId();
 
-        // 🔍 게시글 저장 전에 user 존재 확인
         Boolean userExists = restTemplate.getForObject(
-            "http://user:8081/api/users/" + userId + "/exists",
+            userServiceUrl + "/api/users/" + userId + "/exists",
             Boolean.class
         );
 
@@ -28,7 +38,6 @@ public class BoardService {
             throw new RuntimeException("존재하지 않는 사용자입니다.");
         }
 
-        // ✅ 유효한 사용자면 게시글 저장
         Board board = new Board(request.getTitle(), request.getContent(), userId);
         boardRepository.save(board);
     }

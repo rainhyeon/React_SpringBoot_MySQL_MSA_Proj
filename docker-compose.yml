@@ -47,6 +47,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://board-db:3306/board_db
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: password
+      USER_API_HOST: user-service
+      USER_API_PORT: 8081
     depends_on:
       board-db:
         condition: service_healthy

@@ -4,6 +4,8 @@
 - Docker 기반으로 각 서비스 컨테이너화
 - API 중심 설계로 프론트/백엔드 완전 분리
 
+<img width="882" height="594" alt="image (63)" src="https://github.com/user-attachments/assets/18cf9e9e-4f81-4c4c-be5e-d3c8e0119b6d" />
+
 ## Docker 설치 - ubuntu 환경
 ```code
 curl -fsSL https://get.docker.com -o get-docker.sh

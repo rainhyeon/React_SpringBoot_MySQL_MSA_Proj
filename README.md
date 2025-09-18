@@ -1,9 +1,16 @@
+# 📍 MSA 구조전환으로 Cloud Native 환경 구축 프로젝트
 ## 프로젝트 개요
 - 기존 모놀리식(Springboot-JPA-Blog) 구조를 MSA 아키텍처로 전환
 - React (Frontend), Spring Boot (Backend), MySQL (DB) 구성
 - Docker 기반으로 각 서비스 컨테이너화 및 배포 자동화
 - API 중심 설계로 프론트/백엔드 완전 분리
 
+### 모놀리식의 문제점
+- JSP 기반 모놀리식 구조로, 프론트/백엔드가 강하게 결합
+- 기능 추가/수정 시 전체 빌드 & 배포 필요
+- 사용자 서비스와 게시판 서비스가 단일 DB 의존 → 서비스 독립성 부족
+
+### 아키테처
 <img width="882" height="594" alt="image (63)" src="https://github.com/user-attachments/assets/18cf9e9e-4f81-4c4c-be5e-d3c8e0119b6d" />
 
 - Frontend: React SPA, Nginx 정적 파일 서빙 및 API 프록시
